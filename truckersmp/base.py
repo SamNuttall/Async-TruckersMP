@@ -4,17 +4,17 @@ import logging
 from aiolimiter import AsyncLimiter
 from typing import Union, Optional, List
 from datetime import timedelta, datetime
-from cache import Cache
-from endpoints import Endpoints
-from web import get_request
-from models.server import Server
-from models.player import Player
-from models.ban import Ban
-from models.event import Event, Events, EventsAttributes
-from models.vtc import VTC, VTCs, VTCsAttributes, NewsPost, Role, Member
-from models.version import Version
-from models.rules import Rules
-import exceptions
+from .cache import Cache
+from .endpoints import Endpoints
+from .web import get_request
+from .models.server import Server
+from .models.player import Player
+from .models.ban import Ban
+from .models.event import Event, Events, EventsAttributes
+from .models.vtc import VTC, VTCs, VTCsAttributes, NewsPost, Role, Member
+from .models.version import Version
+from .models.rules import Rules
+from . import exceptions
 
 
 class TruckersMP:
