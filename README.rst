@@ -56,8 +56,8 @@ Let's write a script to print all the server names.
 Resources & Support
 ---------------------
 
-* `Documentation`_
-* `Github Repository`_
+* `Documentation`_.
+* `Github Repository`_.
 * If you need further help, feel free to contact Sam#9210 on Discord or open a new issue.
 
 Licence
@@ -68,12 +68,3 @@ Released under the `MIT License`_.
 .. _Documentation: https://async-truckersmp.readthedocs.io/
 .. _Github Repository: https://github.com/SamNuttall/Async-TruckersMP
 .. _MIT License: https://github.com/SamNuttall/Async-TruckersMP/blob/main/LICENSE
-
-.. toctree::
-   :hidden:
-   :maxdepth: 2
-   :caption: Contents:
-
-   examples
-   api
-
