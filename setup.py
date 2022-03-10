@@ -4,7 +4,7 @@ setup(
     name="async-truckersmp",
     version="0.1",
     description="An asynchronous Python API wrapper for TruckersMP.",
-    long_description=open("README.md", "r", encoding="UTF-8").read(),
+    long_description=open("README.rst", "r", encoding="UTF-8").read(),
     url="https://github.com/SamNuttall/Async-TruckersMP",
     author="Sam Nuttall",
     author_email="nuttall.sam@gmail.com",
