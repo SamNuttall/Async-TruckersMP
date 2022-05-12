@@ -3,13 +3,20 @@ API Reference
 
 Base
 --------------
-The base class can be imported and used like so:
+When using Async-TruckersMP, the base class is at the core of all operations.
+
+* Import Asyncio and the class.
+* Initalise the class and assign it to a variable (to utilise Cache, rate limiting etc; see examples)
+* Use a method the class provides (The class will return a model in normal circumstances)
+* Using the model, get the information that is needed.
+
+It can be imported and used like so:
 
 .. code-block:: python
 
+   import asyncio
    from truckersmp import TruckersMP
    truckersmp = TruckersMP()
-
 
 .. autoclass:: truckersmp.base.TruckersMP
 
