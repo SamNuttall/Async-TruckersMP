@@ -25,7 +25,7 @@ class TruckersMP:
 
     :param loop: The asyncio loop to use. Tries to get if none provided.
     :type loop: :class:`asyncio.AbstractEventLoop`, optional
-    :param limiter: Override the default limiter, defaults to 5 API requests/5 sec (60req/s).
+    :param limiter: Override the default limiter, defaults to 5 API requests/5 sec (60req/m).
     :type limiter: :class:`aiolimiter.AsyncLimiter`, optional
     :param logger: A custom logger to use, defaults to result of logging.getLogger().
     :type logger: :class:`logging.Logger`, optional
