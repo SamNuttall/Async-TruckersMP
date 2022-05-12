@@ -73,9 +73,9 @@ class VTCs:
     """
     A class object representing recent, featured and featured cover VTCs.
 
-    :ivar Optional[List[:class:`VTC <models.vtc.VTC>`]] recent:
-    :ivar Optional[List[:class:`VTC <models.vtc.VTC>`]] featured:
-    :ivar Optional[List[:class:`VTC <models.vtc.VTC>`]] featured_cover:
+    :ivar Optional[List[VTC]] recent:
+    :ivar Optional[List[VTC]] featured:
+    :ivar Optional[List[VTC]] featured_cover:
     """
     def __init__(self, vtcs):
         a = VTCsAttributes
@@ -107,8 +107,8 @@ class VTC:
     :ivar Optional[bool] verified:
     :ivar Optional[bool] validated:
     :ivar Optional[str] created:
-    :ivar :class:`Socials <models.vtc.VTC.Socials>` socials:
-    :ivar :class:`Games <models.vtc.VTC.Games>` games:
+    :ivar Socials socials:
+    :ivar Games games:
     """
     class Socials:
         """

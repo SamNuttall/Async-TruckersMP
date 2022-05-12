@@ -24,11 +24,11 @@ class TruckersMP:
     was not found and False if the request failed.
 
     :param loop: The asyncio loop to use. Tries to get if none provided.
-    :type loop: :class:asyncio.AbstractEventLoop, optional
+    :type loop: :class:`asyncio.AbstractEventLoop`, optional
     :param limiter: Override the default limiter, defaults to 5 API requests/5 sec (60req/s).
-    :type limiter: :class:aiolimiter.AsyncLimiter, optional
+    :type limiter: :class:`aiolimiter.AsyncLimiter`, optional
     :param logger: A custom logger to use, defaults to result of logging.getLogger().
-    :type logger: :class:logging.Logger, optional
+    :type logger: :class:`logging.Logger`, optional
     :param log_freq: How frequently to log rate limit warnings, defaults to 60.
     :type log_freq: Union[int (as seconds), timedelta], optional
     :param min_queue_for_log: The minimum queue size required to start logging rate limits warnings.

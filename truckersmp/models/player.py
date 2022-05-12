@@ -64,9 +64,9 @@ class Player:
     :ivar Optional[str] banned_until:
     :ivar Optional[int] ban_count:
     :ivar Optional[bool] display_bans:
-    :ivar :class:`Patreon <models.player.Player.Patreon>` patreon:
-    :ivar :class:`Permissions <models.player.Player.Permissions>` permissions:
-    :ivar :class:`VTC <models.player.Player.VTC>` vtc:
+    :ivar Patreon patreon:
+    :ivar Permissions permissions:
+    :ivar VTC vtc:
     """
 
     class Patreon:

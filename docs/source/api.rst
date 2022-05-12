@@ -108,6 +108,9 @@ Example use of a Model:
    for ban in bans:
        print(ban.admin_name)
 
+.. note::
+    Model variable descriptions are yet to be written.
+
 Ban
 ^^^^^^^^^^^^^^
 .. currentmodule:: models.ban

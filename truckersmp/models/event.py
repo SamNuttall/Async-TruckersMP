@@ -72,9 +72,9 @@ class Events:
     """
     A class object representing featured, todays and upcoming events.
 
-    :ivar Optional[List[:class:`Event <models.event.Event>`]] featured:
-    :ivar Optional[List[:class:`Event <models.event.Event>`]] today:
-    :ivar Optional[List[:class:`Event <models.event.Event>`]] upcoming:
+    :ivar Optional[List[Event]] featured:
+    :ivar Optional[List[Event]] today:
+    :ivar Optional[List[Event]] upcoming:
     """
     def __init__(self, events):
         a = EventsAttributes
@@ -106,13 +106,13 @@ class Event:
     :ivar Optional[list] url:
     :ivar Optional[str] created_at:
     :ivar Optional[str] updated_at:
-    :ivar :class:`EventType <models.event.Event.EventType>` event_type:
-    :ivar :class:`Server <models.event.Event.Server>` server:
-    :ivar :class:`Departure <models.event.Event.Departure>` departure:
-    :ivar :class:`Arrive <models.event.Event.Arrive>` arrive:
-    :ivar :class:`VTC <models.event.Event.VTC>` vtc:
-    :ivar :class:`User <models.event.Event.User>` user:
-    :ivar :class:`Attendances <models.event.Event.Attendances>` attendances:
+    :ivar EventType event_type:
+    :ivar Server server:
+    :ivar Departure departure:
+    :ivar Arrive arrive:
+    :ivar VTC vtc:
+    :ivar User user:
+    :ivar Attendances attendances:
     """
 
     class EventType:
@@ -210,8 +210,7 @@ class Event:
         A class object representing attendance information of an event
 
         :ivar Optional[int] confirmed:
-        :ivar Optional[int] unsure:
-        :ivar Optional[List[:class:`Attendee <models.event.Event.Attendee>`]] unsure:
+        :ivar Optional[List[Attendee]] unsure:
         """
 
         class Attendee:

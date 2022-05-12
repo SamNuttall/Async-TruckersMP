@@ -27,8 +27,8 @@ class Version:
     :ivar Optional[str] time:
     :ivar Optional[str] supported_game_version:
     :ivar Optional[str] supported_ats_version:
-    :ivar :class:`ETS2MPChecksum <models.version.Version.ETS2MPChecksum>` ets2mp_checksum:
-    :ivar :class:`ATSMPChecksum <models.version.Version.ATSMPChecksum>` atsmp_checksum:
+    :ivar ETS2MPChecksum ets2mp_checksum:
+    :ivar ATSMPChecksum atsmp_checksum:
     """
     class ETS2MPChecksum:
         """
