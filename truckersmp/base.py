@@ -187,6 +187,8 @@ class TruckersMP:
         """
         url = Endpoints.PLAYER_LOOKUP + str(player_id)
         resp = await self._process_request(url)
+        if type(resp['response']) == str:
+            return
         return Player(resp['response'])
 
     async def get_bans(self, player_id: int) -> Union[List[Ban], bool, None]:
