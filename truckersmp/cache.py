@@ -4,6 +4,7 @@ from collections import namedtuple
 
 from hashlib import sha1
 from json import dumps
+from asyncio import Event
 
 
 def make_hashable(key, *args, **kwargs):
@@ -88,6 +89,7 @@ class Cache:
         self.minimise_size = minimise_size
         self.base = dict()
         self.info = self.Info(max_size, time_to_live, minimise_size)
+        self.ongoing_executes = dict()
 
     def _get(self, key):
         """Get an object from the cache dictionary"""
@@ -120,6 +122,13 @@ class Cache:
                 del self.base[key]
                 removed += 1
         return removed
+
+    def _get_execute_process_id(self, func: Callable, *args, **kwargs):
+        process_id = (func.__name__, args, tuple(kwargs.items()))
+        if process_id not in self.ongoing_executes:
+            self.ongoing_executes[process_id] = Event()
+            self.ongoing_executes[process_id].set()
+        return process_id
 
     def add(self, key, value):
         """Add an object to the cache"""
@@ -157,10 +166,18 @@ class Cache:
 
     async def execute_async(self, func: Callable, key=None, *args, **kwargs):
         """Async version of execute"""
+        process_id = self._get_execute_process_id(func, *args, **kwargs)
+        await self.ongoing_executes[process_id].wait()
         key = make_hashable(key, *args, **kwargs)
         c = self.get(key)
         if c is not None:
             return c
-        r = await func(*args, **kwargs)
+
+        self.ongoing_executes[process_id].clear()
+        try:
+            r = await func(*args, **kwargs)
+        finally:
+            self.ongoing_executes[process_id].set()
+
         self.add(key, r)
         return r
