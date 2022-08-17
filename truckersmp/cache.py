@@ -1,6 +1,23 @@
 from datetime import datetime, timedelta
-from typing import Union, Optional
+from typing import Union, Optional, Callable
 from collections import namedtuple
+
+from hashlib import sha1
+from json import dumps
+
+
+def make_hashable(key, *args, **kwargs):
+    """Make a variable value hashable, ready for caching"""
+    if key is not None:
+        # For lists and dictionaries, convert them into a hex string
+        if type(key) is list:
+            key = sha1(''.join(key).encode()).hexdigest()
+        elif type(key) is dict:
+            key = sha1(dumps(key, sort_keys=True).encode()).hexdigest()
+    else:
+        # If a cache key is not provided, use the args & kwargs of the function
+        key = (args, tuple(kwargs.items()))
+    return key
 
 
 class Cache:
@@ -124,3 +141,26 @@ class Cache:
         """Get the info for this cache"""
         self.info.update_size(len(self.base))
         return self.info.get()
+
+    def execute(self, func: Callable, cache, key=None, *args, **kwargs):
+        """
+        Execute a function and save the result to this cache.
+        When this is called again, if a result is found in cache, it is served instead of executing again.
+        """
+        key = make_hashable(key, *args, **kwargs)
+        c = self.get(key)
+        if c is not None:
+            return c
+        r = func(*args, **kwargs)
+        self.add(key, r)
+        return r
+
+    async def execute_async(self, func: Callable, cache, key=None, *args, **kwargs):
+        """Async version of execute"""
+        key = make_hashable(key, *args, **kwargs)
+        c = self.get(key)
+        if c is not None:
+            return c
+        r = await func(*args, **kwargs)
+        self.add(key, r)
+        return r
