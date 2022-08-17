@@ -98,7 +98,7 @@ class Cache:
     def _del_expired(self):
         """Delete expired items from the cache dictionary (potentially resource intensive)"""
         removed = 0
-        for index, obj in enumerate(self.base.values()):
+        for index, key, obj in enumerate(self.base.items()):
             if self._expired(obj):
                 del self.base[key]
                 removed += 1
