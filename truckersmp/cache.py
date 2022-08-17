@@ -142,7 +142,7 @@ class Cache:
         self.info.update_size(len(self.base))
         return self.info.get()
 
-    def execute(self, func: Callable, cache, key=None, *args, **kwargs):
+    def execute(self, func: Callable, key=None, *args, **kwargs):
         """
         Execute a function and save the result to this cache.
         When this is called again, if a result is found in cache, it is served instead of executing again.
@@ -155,7 +155,7 @@ class Cache:
         self.add(key, r)
         return r
 
-    async def execute_async(self, func: Callable, cache, key=None, *args, **kwargs):
+    async def execute_async(self, func: Callable, key=None, *args, **kwargs):
         """Async version of execute"""
         key = make_hashable(key, *args, **kwargs)
         c = self.get(key)
