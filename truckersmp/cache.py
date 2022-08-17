@@ -36,10 +36,12 @@ class Cache:
         """Represents the info about the cache"""
 
         def __init__(self,
+                     name: Optional[str],
                      max_size: int,
                      time_to_live: timedelta,
                      minimise_size: bool
                      ):
+            self.name = name
             self.hits = 0
             self.misses = 0
             self.expired_misses = 0
@@ -62,19 +64,22 @@ class Cache:
 
         def get(self):
             cache_info = namedtuple("CacheInfo", [
-                "hits", "misses", "expired_misses", "size", "max_size", "time_to_live", "minimise_size"
+                "name", "hits", "misses", "expired_misses", "size", "max_size", "time_to_live", "minimise_size"
             ])
             return cache_info(
-                self.hits, self.misses, self.expired_misses, self.size,
+                self.name, self.hits, self.misses, self.expired_misses, self.size,
                 self.max_size, self.time_to_live, self.minimise_size
             )
 
     def __init__(self,
+                 name: Optional[str] = None,
                  max_size: Optional[int] = None,
                  time_to_live: Union[int, timedelta, None] = None,
                  minimise_size: bool = False  # No effect right now, requires async implementation
                  ):
         """
+        :param name: The given name of the cache (simply for organisation, will be given with CacheInfo)
+        :type max_size: Optional[str]
         :param max_size: The max size of the cache
         :type max_size: Optional[int]
         :param time_to_live: The live duration of each cache object (may not be deleted instantly or ever)
@@ -82,13 +87,14 @@ class Cache:
         :param minimise_size: Keep the cache size to a minimium by periodically removing expired items
         :type minimise_size: bool
         """
+        self.name = name
         self.max_size = float('inf') if max_size is None else max_size
         if type(time_to_live) == int:
             time_to_live = timedelta(seconds=time_to_live)
         self.ttl = time_to_live
         self.minimise_size = minimise_size
         self.base = dict()
-        self.info = self.Info(max_size, time_to_live, minimise_size)
+        self.info = self.Info(name, max_size, time_to_live, minimise_size)
         self.ongoing_executes = dict()
 
     def _get(self, key):
