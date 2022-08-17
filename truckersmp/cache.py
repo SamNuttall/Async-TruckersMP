@@ -6,6 +6,12 @@ from hashlib import sha1
 from json import dumps
 from asyncio import Event
 
+caches = list()
+
+
+def get_caches():
+    return tuple(caches)
+
 
 def make_hashable(key, *args, **kwargs):
     """Make a variable value hashable, ready for caching"""
@@ -96,6 +102,7 @@ class Cache:
         self.base = dict()
         self.info = self.Info(name, max_size, time_to_live, minimise_size)
         self.ongoing_executes = dict()
+        caches.append(self)
 
     def _get(self, key):
         """Get an object from the cache dictionary"""
