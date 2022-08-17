@@ -171,7 +171,7 @@ class TruckersMP:
                 return None
             raise
         else:
-            await self.cache.add(key, resp if resp is not None else "None")
+            self.cache.add(key, resp if resp is not None else "None")
             return resp
         finally:
             self.ongoing_requests[key].set()
