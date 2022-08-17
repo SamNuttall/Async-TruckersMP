@@ -78,7 +78,7 @@ class TruckersMP:
             log_freq = timedelta(seconds=log_freq)
         self.log_freq = log_freq
         self.timeout = request_timeout
-        self.cache = Cache(cache_max_size, cache_time_to_live, smart_max=True)
+        self.cache = Cache(cache_max_size, cache_time_to_live)
         self.auto_handle_request_errors = auto_handle_request_errors
         self.auto_handle_ratelimit_errors = auto_handle_ratelimit_errors
         self.auto_handle_notfound_errors = auto_handle_notfound_errors
