@@ -78,7 +78,7 @@ class TruckersMP:
             log_freq = timedelta(seconds=log_freq)
         self.log_freq = log_freq
         self.timeout = request_timeout
-        self.cache = Cache(cache_max_size, cache_time_to_live)
+        self.cache = Cache("async-truckersmp", cache_max_size, cache_time_to_live)
         self.auto_handle_request_errors = auto_handle_request_errors
         self.auto_handle_ratelimit_errors = auto_handle_ratelimit_errors
         self.auto_handle_notfound_errors = auto_handle_notfound_errors
@@ -131,6 +131,8 @@ class TruckersMP:
         """
         key = (url,)
 
+        # TODO: Rewrite this to move logic to cache
+
         # Create event lock if not exist
         if key not in self.ongoing_requests:
             self.ongoing_requests[key] = asyncio.Event()
@@ -140,7 +142,7 @@ class TruckersMP:
         await self.ongoing_requests[key].wait()
 
         # Get from cache, continue if expired or nothing
-        cache = await self.cache.get(key)
+        cache = self.cache.get(key)
         if cache:
             return cache
 
