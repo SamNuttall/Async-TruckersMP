@@ -252,8 +252,9 @@ class TruckersMP:
             will be passed through
         """
         resp = await self._process_request(Endpoints.EVENTS)
-        event_types = (EventsAttributes.featured, EventsAttributes.today, EventsAttributes.upcoming)
-        events_dict = {event_types[0]: [], event_types[1]: [], event_types[2]: []}
+        event_types = (EventsAttributes.featured, EventsAttributes.today,
+                       EventsAttributes.now, EventsAttributes.upcoming)
+        events_dict = {event_types[0]: [], event_types[1]: [], event_types[2]: [], event_types[3]: []}
         for index, event_type in enumerate(resp['response'].values()):
             for event in event_type:
                 events_dict[event_types[index]].append(Event(event))

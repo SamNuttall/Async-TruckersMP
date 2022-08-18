@@ -1,6 +1,7 @@
 class EventsAttributes:
     featured = "featured"
     today = "today"
+    now = "now"
     upcoming = "upcoming"
 
 
