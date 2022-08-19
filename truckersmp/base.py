@@ -124,7 +124,7 @@ class TruckersMP:
                 raise exceptions.FormatError
             if r == CacheExceptionValues.NotFoundError:
                 raise exceptions.NotFoundError
-        finally:
+
             return r
 
     async def get_player(self, player_id: int) -> Union[Player, bool, None]:  # Rewritten
