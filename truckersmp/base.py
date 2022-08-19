@@ -129,7 +129,7 @@ class TruckersMP:
 
             return r
 
-    async def get_player(self, player_id: int) -> Union[Player, bool, None]:  # Rewritten
+    async def get_player(self, player_id: int) -> Union[Player, bool, None]:
         """
         Get a specific TruckersMP player from the API using their player id
 
@@ -165,13 +165,16 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.BANS_LOOKUP + str(player_id)
-        resp = await self._process_request(url)
+        resp = await self.wrapper(url)
         bans = list()
-        for ban in resp['response']:
-            bans.append(Ban(ban))
+        try:
+            for ban in resp['response']:
+                bans.append(Ban(ban))
+        except (KeyError, TypeError):
+            raise exceptions.FormatError()
         return bans
 
-    async def get_servers(self) -> Union[List[Server], bool, None]:  # Rewritten
+    async def get_servers(self) -> Union[List[Server], bool, None]:
         """
         Get a list of TruckersMP servers
 
@@ -200,8 +203,13 @@ class TruckersMP:
         :raises: Refer to :mod:`_process_request() <truckersmp.base.TruckersMP._process_request>` as these errors
             will be passed through
         """
-        resp = await self._process_request(Endpoints.INGAME_TIME)
-        return resp['game_time']
+        url = Endpoints.INGAME_TIME
+        resp = await self.wrapper(url)
+        try:
+            game_time = resp['game_time']
+        except (KeyError, TypeError):
+            raise exceptions.FormatError()
+        return game_time
 
     async def get_events(self) -> Union[Events, bool, None]:  # Rewritten
         """
@@ -247,10 +255,12 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.EVENT_LOOKUP + str(event_id)
-        resp = await self._process_request(url)
-        if 'response' not in resp:
-            return None
-        return Event(resp['response'])
+        resp = await self.wrapper(url)
+        try:
+            event = Event(resp['response'])
+        except (KeyError, TypeError):
+            raise exceptions.FormatError()
+        return event
 
     async def get_vtcs(self) -> Union[VTCs, bool, None]:
         """
@@ -261,13 +271,21 @@ class TruckersMP:
         :raises: Refer to :mod:`_process_request() <truckersmp.base.TruckersMP._process_request>` as these errors
             will be passed through
         """
-        resp = await self._process_request(Endpoints.VTCS)
-        vtc_types = (VTCsAttributes.recent, VTCsAttributes.featured, VTCsAttributes.featured_cover)
+        url = Endpoints.VTCS
+        resp = await self.wrapper(url)
+        vtc_types = (VTCsAttributes.recent,
+                     VTCsAttributes.featured,
+                     VTCsAttributes.featured_cover
+                     )
         vtcs_dict = {vtc_types[0]: [], vtc_types[1]: [], vtc_types[2]: []}
-        for index, vtc_type in enumerate(resp['response'].values()):
-            for vtc in vtc_type:
-                vtcs_dict[vtc_types[index]].append(VTC(vtc))
-        return VTCs(vtcs_dict)
+        try:
+            for index, vtc_type in enumerate(resp['response'].values()):
+                for vtc in vtc_type:
+                    vtcs_dict[vtc_types[index]].append(VTC(vtc))
+            vtcs = VTCs(vtcs_dict)
+        except (KeyError, TypeError):
+            raise exceptions.FormatError()
+        return vtcs
 
     async def get_vtc(self, vtc_id: int) -> Union[VTC, bool, None]:
         """
@@ -281,11 +299,12 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id)
+        resp = await self.wrapper(url)
         try:
-            resp = await self._process_request(url)
-        except exceptions.NotFoundError:
-            return False
-        return VTC(resp['response'])
+            vtc = VTC(resp['response'])
+        except (KeyError, TypeError):
+            raise exceptions.FormatError()
+        return vtc
 
     async def get_vtc_news(self, vtc_id: int) -> Union[List[NewsPost], bool, None]:
         """
@@ -303,10 +322,13 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_NEWS
-        resp = await self._process_request(url)
+        resp = await self.wrapper(url)
         posts = list()
-        for news_post in resp['response']['news']:
-            posts.append(NewsPost(news_post))
+        try:
+            for news_post in resp['response']['news']:
+                posts.append(NewsPost(news_post))
+        except (KeyError, TypeError):
+            raise exceptions.FormatError()
         return posts
 
     async def get_vtc_news_post(self, vtc_id: int, news_post_id: int
@@ -324,8 +346,12 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_NEWS + str(news_post_id)
-        resp = await self._process_request(url)
-        return NewsPost(resp['response'])
+        resp = await self.wrapper(url)
+        try:
+            post = NewsPost(resp['response'])
+        except (KeyError, TypeError):
+            raise exceptions.FormatError()
+        return post
 
     async def get_vtc_roles(self, vtc_id: int) -> Union[List[Role], bool, None]:
         """
@@ -339,10 +365,13 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_ROLES
-        resp = await self._process_request(url)
+        resp = await self.wrapper(url)
         vtc_roles = list()
-        for vtc_role in resp['response']['roles']:
-            vtc_roles.append(Role(vtc_role))
+        try:
+            for vtc_role in resp['response']['roles']:
+                vtc_roles.append(Role(vtc_role))
+        except (KeyError, TypeError):
+            raise exceptions.FormatError()
         return vtc_roles
 
     async def get_vtc_role(self, vtc_id: int, role_id: int) -> Union[Role, bool, None]:
@@ -380,10 +409,13 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_MEMBERS
-        resp = await self._process_request(url)
+        resp = await self.wrapper(url)
         vtc_members = list()
-        for vtc_member in resp['response']['members']:
-            vtc_members.append(Member(vtc_member))
+        try:
+            for vtc_member in resp['response']['members']:
+                vtc_members.append(Member(vtc_member))
+        except (KeyError, TypeError):
+            raise exceptions.FormatError()
         return vtc_members
 
     async def get_vtc_member(self, vtc_id: int, member_id: int) -> Union[Member, bool, None]:
@@ -421,10 +453,13 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_EVENTS
-        resp = await self._process_request(url)
+        resp = await self.wrapper(url)
         events = list()
-        for event in resp['response']:
-            events.append(Event(event))
+        try:
+            for event in resp['response']:
+                events.append(Event(event))
+        except (KeyError, TypeError):
+            raise exceptions.FormatError()
         return events
 
     async def get_vtc_event(self, vtc_id: int, event_id: int) -> Union[Event, bool, None]:
@@ -445,8 +480,12 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_EVENTS + str(event_id)
-        resp = await self._process_request(url)
-        return Event(resp['response'])
+        resp = await self.wrapper(url)
+        try:
+            event = Event(resp['response'])
+        except (KeyError, TypeError):
+            raise exceptions.FormatError()
+        return event
 
     async def get_version(self) -> Union[Version, bool, None]:
         """
@@ -455,8 +494,12 @@ class TruckersMP:
         :return: :class:`Version <models.version.Version>`
         :rtype: Union[:class:`Version <models.version.Version>`, bool, None]
         """
-        resp = await self._process_request(Endpoints.VERSION)
-        return Version(resp)
+        resp = await self.wrapper(Endpoints.VERSION)
+        try:
+            version = Version(resp)
+        except (KeyError, TypeError):
+            raise exceptions.FormatError()
+        return version
 
     async def get_rules(self) -> Union[Rules, bool, None]:
         """
@@ -465,5 +508,9 @@ class TruckersMP:
         :return: :class:`Rules <models.rules.Rules>`
         :rtype: Union[:class:`Rules <models.rules.Rules>`, bool, None]
         """
-        resp = await self._process_request(Endpoints.RULES)
+        resp = await self.wrapper(Endpoints.RULES)
+        try:
+            rules = Rules(resp)
+        except (KeyError, TypeError):
+            raise exceptions.FormatError()
         return Rules(resp)
