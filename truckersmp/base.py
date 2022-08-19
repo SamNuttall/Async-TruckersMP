@@ -17,6 +17,20 @@ from .models.rules import Rules
 from . import exceptions
 
 
+async def execute(func: Callable, not_found: Callable = None, error: Callable = None, *args, **kwargs):
+    """"""
+    try:
+        r = await func(*args, **kwargs)
+    except exceptions.NotFoundError:
+        await not_found()
+        raise exceptions.ExecuteError()
+    except (exceptions.ConnectError, exceptions.FormatError, exceptions.RateLimitError):
+        await error()
+        raise exceptions.ExecuteError()
+    else:
+        return r
+
+
 class TruckersMP:
     """
     The main/base class to import when using the API wrapper. Configurable on initialisation by parameter passing.
@@ -89,19 +103,6 @@ class TruckersMP:
                 return await get_request(url, timeout=self.timeout)
             finally:
                 self.rate_limit['queue'] -= 1
-
-    async def execute(self, func: Callable, not_found: Callable = None, error: Callable = None, *args, **kwargs):
-        """"""
-        try:
-            r = await func(*args, **kwargs)
-        except exceptions.NotFoundError:
-            await not_found()
-            raise exceptions.ExecuteError()
-        except (exceptions.ConnectError, exceptions.FormatError, exceptions.RateLimitError):
-            await error()
-            raise exceptions.ExecuteError()
-        else:
-            return r
 
     async def wrapper(self, url):
         class CacheExceptionValues:
