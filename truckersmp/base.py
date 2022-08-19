@@ -2,7 +2,7 @@ import asyncio
 import logging
 
 from aiolimiter import AsyncLimiter
-from typing import Union, Optional, List
+from typing import Union, Optional, List, Callable
 from datetime import timedelta, datetime
 from .cache import Cache
 from .endpoints import Endpoints
@@ -41,19 +41,6 @@ class TruckersMP:
     :type cache_time_to_live: int, optional
     :param cache_max_size: The maximum number of items in the cache. Provide None for infinite size, defaults to 65536.
     :type cache_max_size: Optional[int], optional
-    :param auto_handle_request_errors: When enabled, False (bool) will be returned when a request to an endpoint fails.
-        Any future requests to the same endpoint will be locked/held for retry_time, defaults to True
-    :type auto_handle_request_errors: bool, optional
-    :param auto_handle_notfound_errors: When enabled, None will be returned when the API returns a not found error (404)
-        . Future requests will not be locked, defaults to True
-    :type auto_handle_notfound_errors: bool, optional
-    :param auto_handle_ratelimit_errors: When enabled, False (bool) will be returned when the API returns a rate limit
-        error (429). Any future requests to the same endpoint will be locked/held for retry_time. Under normal
-        circumstances, the default limiter should stop this happening, defaults to False
-    :type auto_handle_ratelimit_errors: bool, optional
-    :param retry_time: Seconds to lock/hold further requests (per-endpoint) when the previous request raised an error
-        , defaults to 20
-    :type retry_time: int, optional
     """
 
     def __init__(self,
@@ -64,11 +51,7 @@ class TruckersMP:
                  min_queue_for_log: int = 10,
                  request_timeout: int = 10,
                  cache_time_to_live: Optional[int] = 60,  # Seconds
-                 cache_max_size: Optional[int] = 65536,
-                 auto_handle_request_errors: bool = True,
-                 auto_handle_ratelimit_errors: bool = True,
-                 auto_handle_notfound_errors: bool = False,
-                 retry_time: int = 20  # Seconds
+                 cache_max_size: Optional[int] = 65536
                  ):
         self.loop = loop
         self.limiter = limiter
@@ -78,20 +61,14 @@ class TruckersMP:
             log_freq = timedelta(seconds=log_freq)
         self.log_freq = log_freq
         self.timeout = request_timeout
-        self.cache = Cache("async-truckersmp", cache_max_size, cache_time_to_live)
-        self.auto_handle_request_errors = auto_handle_request_errors
-        self.auto_handle_ratelimit_errors = auto_handle_ratelimit_errors
-        self.auto_handle_notfound_errors = auto_handle_notfound_errors
-        self.retry_time = retry_time
-        self.ongoing_requests = dict()
-
+        self.cache = Cache(name="async-truckersmp", max_size=cache_max_size, time_to_live=cache_time_to_live)
         self.rate_limit = {
             'last_log': datetime.utcnow() - self.log_freq,
             'queue': 0,
             'min_queue_for_log': min_queue_for_log
         }
 
-    async def _make_request(self, url) -> Optional[dict]:
+    async def make_request(self, url) -> Optional[dict]:  # Old
         """
         Make a get request that adheres to the class's configuration (such as rate limit, logging).
 
@@ -113,70 +90,44 @@ class TruckersMP:
             finally:
                 self.rate_limit['queue'] -= 1
 
-    async def _process_request(self, url) -> Union[dict, bool, None]:
-        """
-        Process a request by checking if it's in cache before making an API request.
-        Will hold further requests (per-endpoint) if an existing request is in progress, then check cache.
+    async def execute(self, func: Callable, not_found: Callable = None, error: Callable = None, *args, **kwargs):
+        """"""
+        try:
+            r = await func(*args, **kwargs)
+        except exceptions.NotFoundError:
+            await not_found()
+            raise exceptions.ExecuteError()
+        except (exceptions.ConnectError, exceptions.FormatError, exceptions.RateLimitError):
+            await error()
+            raise exceptions.ExecuteError()
+        else:
+            return r
 
-        .. _base__process_request:
-
-        :return: The JSON response given by the API as a Python dictionary
-        :rtype: Optional[dict]
-        :raises truckersmp.exceptions.NotFoundError: If the resource (eg. player) is not found and
-                auto_handle_notfound_errors is False
-        :raises truckersmp.exceptions.ConnectError: If something went wrong while making an API request and
-                auto_handle_request_errors is False
-        :raises truckersmp.exceptions.RateLimitError: If a rate limit error (429) is returned by the API and
-                auto_handle_ratelimit_errors is False
-        """
-        key = (url,)
-
-        # TODO: Rewrite this to move logic to cache
-
-        # Create event lock if not exist
-        if key not in self.ongoing_requests:
-            self.ongoing_requests[key] = asyncio.Event()
-            self.ongoing_requests[key].set()
-
-        # Wait if a call on the same endpoint is in progress
-        await self.ongoing_requests[key].wait()
-
-        # Get from cache, continue if expired or nothing
-        cache = self.cache.get(key)
-        if cache:
-            return cache
-
-        # We're about to make an API call, lock further requests on this endpoint
-        self.ongoing_requests[key].clear()
-
-        async def handle_error(should_raise, reason, retry_time):
-            if should_raise:
-                raise
-            await hold_lock(f"Failed to make a request due to {reason}; automatically handling... "
-                            f"Future requests on this endpoint are locked for {retry_time} seconds.",
-                            retry_time)
-
-        async def hold_lock(warn_msg, hold_time):
-            self.logger.warning(warn_msg)
-            await asyncio.sleep(hold_time)
+    async def wrapper(self, url):
+        class CacheExceptionValues:
+            ConnectError = "cache-instruction: to raise - ConnectError"
+            FormatError = "cache-instruction: to raise - FormatError"
+            NotFoundError = "cache-instruction: to raise - NotFoundError"
 
         try:
-            resp = await self._make_request(url)
+            r = await self.cache.execute_async(get_request, None, url, timeout=self.timeout, limiter=self.limiter)
         except exceptions.ConnectError:
-            await handle_error(self.auto_handle_request_errors, "a connection error", self.retry_time)
-        except exceptions.RateLimitError:
-            await handle_error(self.auto_handle_ratelimit_errors, "a rate-limit error", self.retry_time)
+            r = CacheExceptionValues.ConnectError
+        except exceptions.FormatError:
+            r = CacheExceptionValues.FormatError
         except exceptions.NotFoundError:
-            if self.auto_handle_request_errors:
-                return None
-            raise
+            r = CacheExceptionValues.NotFoundError
         else:
-            self.cache.add(key, resp if resp is not None else "None")
-            return resp
+            if r == CacheExceptionValues.ConnectError:
+                raise exceptions.ConnectError
+            if r == CacheExceptionValues.FormatError:
+                raise exceptions.FormatError
+            if r == CacheExceptionValues.NotFoundError:
+                raise exceptions.NotFoundError
         finally:
-            self.ongoing_requests[key].set()
+            return r
 
-    async def get_player(self, player_id: int) -> Union[Player, bool, None]:
+    async def get_player(self, player_id: int) -> Union[Player, bool, None]:  # Rewritten
         """
         Get a specific TruckersMP player from the API using their player id
 
@@ -188,10 +139,17 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.PLAYER_LOOKUP + str(player_id)
-        resp = await self._process_request(url)
-        if type(resp['response']) == str:
-            return
-        return Player(resp['response'])
+        resp = await self.wrapper(url)
+        try:
+            if resp['error']:
+                if resp['descriptor'] == "Unable to find player with that ID.":  # TruckersMP doesn't raise a 404
+                    raise exceptions.NotFoundError()
+                raise exceptions.ConnectError()
+            player = Player(resp['response'])
+        except (KeyError, TypeError):
+            raise exceptions.FormatError()
+        else:
+            return player
 
     async def get_bans(self, player_id: int) -> Union[List[Ban], bool, None]:
         """
@@ -211,7 +169,7 @@ class TruckersMP:
             bans.append(Ban(ban))
         return bans
 
-    async def get_servers(self) -> Union[List[Server], bool, None]:
+    async def get_servers(self) -> Union[List[Server], bool, None]:  # Rewritten
         """
         Get a list of TruckersMP servers
 
@@ -220,11 +178,16 @@ class TruckersMP:
         :raises: Refer to :mod:`_process_request() <truckersmp.base.TruckersMP._process_request>` as these errors
             will be passed through
         """
-        resp = await self._process_request(Endpoints.SERVERS)
+        url = Endpoints.SERVERS
+        resp = await self.wrapper(url)
         servers = list()
-        for server in resp['response']:
-            servers.append(Server(server))
-        return servers
+        try:
+            for server in resp['response']:
+                servers.append(Server(server))
+        except (KeyError, TypeError):
+            raise exceptions.FormatError()
+        else:
+            return servers
 
     async def get_ingame_time(self) -> Union[int, bool, None]:
         """
@@ -238,7 +201,7 @@ class TruckersMP:
         resp = await self._process_request(Endpoints.INGAME_TIME)
         return resp['game_time']
 
-    async def get_events(self) -> Union[Events, bool, None]:
+    async def get_events(self) -> Union[Events, bool, None]:  # Rewritten
         """
         Get featured, todays and upcoming events.
 
@@ -251,14 +214,24 @@ class TruckersMP:
         :raises: Refer to :mod:`_process_request() <truckersmp.base.TruckersMP._process_request>` as these errors
             will be passed through
         """
-        resp = await self._process_request(Endpoints.EVENTS)
-        event_types = (EventsAttributes.featured, EventsAttributes.today,
-                       EventsAttributes.now, EventsAttributes.upcoming)
+        url = Endpoints.EVENTS
+        resp = await self.wrapper(url)
+
+        event_types = (EventsAttributes.featured,
+                       EventsAttributes.today,
+                       EventsAttributes.now,
+                       EventsAttributes.upcoming
+                       )
         events_dict = {event_types[0]: [], event_types[1]: [], event_types[2]: [], event_types[3]: []}
-        for index, event_type in enumerate(resp['response'].values()):
-            for event in event_type:
-                events_dict[event_types[index]].append(Event(event))
-        return Events(events_dict)
+
+        try:
+            for index, event_type in enumerate(resp['response'].values()):
+                for event in event_type:
+                    events_dict[event_types[index]].append(Event(event))
+        except (KeyError, TypeError):
+            raise exceptions.FormatError()
+        else:
+            return Events(events_dict)
 
     async def get_event(self, event_id: int) -> Union[Event, bool, None]:
         """
@@ -273,6 +246,8 @@ class TruckersMP:
         """
         url = Endpoints.EVENT_LOOKUP + str(event_id)
         resp = await self._process_request(url)
+        if 'response' not in resp:
+            return None
         return Event(resp['response'])
 
     async def get_vtcs(self) -> Union[VTCs, bool, None]:

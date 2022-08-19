@@ -160,3 +160,4 @@ class Player:
         self.patreon = self.Patreon(p, a)
         self.permissions = self.Permissions(p, a)
         self.vtc = self.VTC(p, a)
+        self.test = "test"
