@@ -8,10 +8,11 @@ from aiolimiter import AsyncLimiter
 
 async def get_request(
         url: str,
+        logger,
         headers: dict = None,
         params: dict = None,
         timeout: int = 10,
-        limiter: AsyncLimiter = None
+        limiter: AsyncLimiter = None,
 ) -> Optional[dict]:
     """
     Makes a web get request (eg. to an API) for JSON.
@@ -43,7 +44,7 @@ async def get_request(
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=headers, params=params, timeout=timeout) as resp:
-                print("API Request")
+                logger.debug(f"GET Request: {url} = {resp.status}")
                 if str(resp.status).startswith('2'):
                     return await resp.json()
                 if resp.status == 429:

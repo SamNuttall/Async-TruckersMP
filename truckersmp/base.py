@@ -110,7 +110,8 @@ class TruckersMP:
             NotFoundError = "cache-instruction: to raise - NotFoundError"
 
         try:
-            r = await self.cache.execute_async(get_request, None, url, timeout=self.timeout, limiter=self.limiter)
+            r = await self.cache.execute_async(get_request, None, url,
+                                               timeout=self.timeout, limiter=self.limiter, logger=self.logger)
         except exceptions.ConnectError:
             r = CacheExceptionValues.ConnectError
         except exceptions.FormatError:
