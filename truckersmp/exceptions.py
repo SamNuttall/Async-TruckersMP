@@ -61,3 +61,12 @@ class FormatError(Error):
     def __str__(self) -> str:
         return self.message
 
+
+class ExecuteError(Error):
+    """Raised when the execute function raises a different error and executes a different function"""
+    def __init__(self):
+        self.message = "The execute function ran a function because of a different error"
+        super().__init__()
+
+    def __str__(self) -> str:
+        return self.message
