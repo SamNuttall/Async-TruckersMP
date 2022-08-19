@@ -168,6 +168,10 @@ class TruckersMP:
         resp = await self.wrapper(url)
         bans = list()
         try:
+            if resp['error']:
+                if resp['descriptor'] == "Invalid user ID":  # TruckersMP doesn't raise a 404
+                    raise exceptions.NotFoundError()
+                raise exceptions.ConnectError()
             for ban in resp['response']:
                 bans.append(Ban(ban))
         except (KeyError, TypeError):
@@ -256,6 +260,8 @@ class TruckersMP:
         """
         url = Endpoints.EVENT_LOOKUP + str(event_id)
         resp = await self.wrapper(url)
+        if resp is None:
+            raise exceptions.NotFoundError()
         try:
             event = Event(resp['response'])
         except (KeyError, TypeError):
@@ -300,6 +306,8 @@ class TruckersMP:
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id)
         resp = await self.wrapper(url)
+        if resp is None:
+            raise exceptions.NotFoundError()
         try:
             vtc = VTC(resp['response'])
         except (KeyError, TypeError):
@@ -324,6 +332,8 @@ class TruckersMP:
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_NEWS
         resp = await self.wrapper(url)
         posts = list()
+        if resp is None:
+            raise exceptions.NotFoundError()
         try:
             for news_post in resp['response']['news']:
                 posts.append(NewsPost(news_post))
@@ -347,6 +357,8 @@ class TruckersMP:
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_NEWS + str(news_post_id)
         resp = await self.wrapper(url)
+        if resp is None:
+            raise exceptions.NotFoundError()
         try:
             post = NewsPost(resp['response'])
         except (KeyError, TypeError):
@@ -367,6 +379,8 @@ class TruckersMP:
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_ROLES
         resp = await self.wrapper(url)
         vtc_roles = list()
+        if resp is None:
+            raise exceptions.NotFoundError()
         try:
             for vtc_role in resp['response']['roles']:
                 vtc_roles.append(Role(vtc_role))
@@ -411,6 +425,8 @@ class TruckersMP:
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_MEMBERS
         resp = await self.wrapper(url)
         vtc_members = list()
+        if resp is None:
+            raise exceptions.NotFoundError()
         try:
             for vtc_member in resp['response']['members']:
                 vtc_members.append(Member(vtc_member))
@@ -455,6 +471,8 @@ class TruckersMP:
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_EVENTS
         resp = await self.wrapper(url)
         events = list()
+        if resp is None:
+            raise exceptions.NotFoundError()
         try:
             for event in resp['response']:
                 events.append(Event(event))
@@ -481,6 +499,8 @@ class TruckersMP:
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_EVENTS + str(event_id)
         resp = await self.wrapper(url)
+        if resp is None:
+            raise exceptions.NotFoundError()
         try:
             event = Event(resp['response'])
         except (KeyError, TypeError):
