@@ -31,6 +31,32 @@ async def execute(func: Callable, not_found: Callable = None, error: Callable = 
         return r
 
 
+async def wrapper(self, url, cache):
+    class CacheExceptionValues:
+        ConnectError = "cache-instruction: to raise - ConnectError"
+        FormatError = "cache-instruction: to raise - FormatError"
+        NotFoundError = "cache-instruction: to raise - NotFoundError"
+
+    try:
+        r = await cache.execute_async(get_request, None, url,
+                                      timeout=self.timeout, limiter=self.limiter, logger=self.logger)
+    except exceptions.ConnectError:
+        r = CacheExceptionValues.ConnectError
+    except exceptions.FormatError:
+        r = CacheExceptionValues.FormatError
+    except exceptions.NotFoundError:
+        r = CacheExceptionValues.NotFoundError
+    else:
+        if r == CacheExceptionValues.ConnectError:
+            raise exceptions.ConnectError
+        if r == CacheExceptionValues.FormatError:
+            raise exceptions.FormatError
+        if r == CacheExceptionValues.NotFoundError:
+            raise exceptions.NotFoundError
+
+        return r
+
+
 class TruckersMP:
     """
     The main/base class to import when using the API wrapper. Configurable on initialisation by parameter passing.
@@ -104,31 +130,6 @@ class TruckersMP:
             finally:
                 self.rate_limit['queue'] -= 1
 
-    async def wrapper(self, url):
-        class CacheExceptionValues:
-            ConnectError = "cache-instruction: to raise - ConnectError"
-            FormatError = "cache-instruction: to raise - FormatError"
-            NotFoundError = "cache-instruction: to raise - NotFoundError"
-
-        try:
-            r = await self.cache.execute_async(get_request, None, url,
-                                               timeout=self.timeout, limiter=self.limiter, logger=self.logger)
-        except exceptions.ConnectError:
-            r = CacheExceptionValues.ConnectError
-        except exceptions.FormatError:
-            r = CacheExceptionValues.FormatError
-        except exceptions.NotFoundError:
-            r = CacheExceptionValues.NotFoundError
-        else:
-            if r == CacheExceptionValues.ConnectError:
-                raise exceptions.ConnectError
-            if r == CacheExceptionValues.FormatError:
-                raise exceptions.FormatError
-            if r == CacheExceptionValues.NotFoundError:
-                raise exceptions.NotFoundError
-
-            return r
-
     async def get_player(self, player_id: int) -> Union[Player, bool, None]:
         """
         Get a specific TruckersMP player from the API using their player id
@@ -141,7 +142,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.PLAYER_LOOKUP + str(player_id)
-        resp = await self.wrapper(url)
+        resp = await wrapper(url, self.cache)
         try:
             if resp['error']:
                 if resp['descriptor'] == "Unable to find player with that ID.":  # TruckersMP doesn't raise a 404
@@ -165,7 +166,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.BANS_LOOKUP + str(player_id)
-        resp = await self.wrapper(url)
+        resp = await wrapper(url, self.cache)
         bans = list()
         try:
             if resp['error']:
@@ -188,7 +189,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.SERVERS
-        resp = await self.wrapper(url)
+        resp = await wrapper(url, self.cache)
         servers = list()
         try:
             for server in resp['response']:
@@ -208,7 +209,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.INGAME_TIME
-        resp = await self.wrapper(url)
+        resp = await wrapper(url, self.cache)
         try:
             game_time = resp['game_time']
         except (KeyError, TypeError):
@@ -229,7 +230,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.EVENTS
-        resp = await self.wrapper(url)
+        resp = await wrapper(url, self.cache)
 
         event_types = (EventsAttributes.featured,
                        EventsAttributes.today,
@@ -259,7 +260,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.EVENT_LOOKUP + str(event_id)
-        resp = await self.wrapper(url)
+        resp = await wrapper(url, self.cache)
         if resp is None:
             raise exceptions.NotFoundError()
         try:
@@ -278,7 +279,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.VTCS
-        resp = await self.wrapper(url)
+        resp = await wrapper(url, self.cache)
         vtc_types = (VTCsAttributes.recent,
                      VTCsAttributes.featured,
                      VTCsAttributes.featured_cover
@@ -305,7 +306,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id)
-        resp = await self.wrapper(url)
+        resp = await wrapper(url, self.cache)
         if resp is None:
             raise exceptions.NotFoundError()
         try:
@@ -330,7 +331,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_NEWS
-        resp = await self.wrapper(url)
+        resp = await wrapper(url, self.cache)
         posts = list()
         if resp is None:
             raise exceptions.NotFoundError()
@@ -356,7 +357,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_NEWS + str(news_post_id)
-        resp = await self.wrapper(url)
+        resp = await wrapper(url, self.cache)
         if resp is None:
             raise exceptions.NotFoundError()
         try:
@@ -377,7 +378,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_ROLES
-        resp = await self.wrapper(url)
+        resp = await wrapper(url, self.cache)
         vtc_roles = list()
         if resp is None:
             raise exceptions.NotFoundError()
@@ -424,7 +425,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_MEMBERS
-        resp = await self.wrapper(url)
+        resp = await wrapper(url, self.cache)
         vtc_members = list()
         if resp is None:
             raise exceptions.NotFoundError()
@@ -471,7 +472,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_EVENTS
-        resp = await self.wrapper(url)
+        resp = await wrapper(url, self.cache)
         events = list()
         if resp is None:
             raise exceptions.NotFoundError()
@@ -500,7 +501,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_EVENTS + str(event_id)
-        resp = await self.wrapper(url)
+        resp = await wrapper(url, self.cache)
         if resp is None:
             raise exceptions.NotFoundError()
         try:
@@ -516,7 +517,7 @@ class TruckersMP:
         :return: :class:`Version <models.version.Version>`
         :rtype: Union[:class:`Version <models.version.Version>`, bool, None]
         """
-        resp = await self.wrapper(Endpoints.VERSION)
+        resp = await wrapper(Endpoints.VERSION)
         try:
             version = Version(resp)
         except (KeyError, TypeError):
@@ -530,7 +531,7 @@ class TruckersMP:
         :return: :class:`Rules <models.rules.Rules>`
         :rtype: Union[:class:`Rules <models.rules.Rules>`, bool, None]
         """
-        resp = await self.wrapper(Endpoints.RULES)
+        resp = await wrapper(Endpoints.RULES)
         try:
             rules = Rules(resp)
         except (KeyError, TypeError):
