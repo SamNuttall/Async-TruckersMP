@@ -410,6 +410,7 @@ class TruckersMP:
         for vtc_role in vtc_roles:
             if vtc_role.id == role_id:
                 return vtc_role
+        raise exceptions.NotFoundError()
 
     async def get_vtc_members(self, vtc_id: int) -> Union[List[Member], bool, None]:
         """
@@ -456,6 +457,7 @@ class TruckersMP:
         for vtc_member in vtc_members:
             if vtc_member.id == member_id:
                 return vtc_member
+        raise exceptions.NotFoundError()
 
     async def get_vtc_events(self, vtc_id: int) -> Union[List[Event], bool, None]:
         """
