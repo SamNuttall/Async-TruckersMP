@@ -31,15 +31,14 @@ async def execute(func: Callable, not_found: Callable = None, error: Callable = 
         return r
 
 
-async def wrapper(self, url, cache):
+async def wrapper(url, cache, timeout, limiter, logger):
     class CacheExceptionValues:
         ConnectError = "cache-instruction: to raise - ConnectError"
         FormatError = "cache-instruction: to raise - FormatError"
         NotFoundError = "cache-instruction: to raise - NotFoundError"
 
     try:
-        r = await cache.execute_async(get_request, None, url,
-                                      timeout=self.timeout, limiter=self.limiter, logger=self.logger)
+        r = await cache.execute_async(get_request, None, url, logger, timeout=timeout, limiter=limiter)
     except exceptions.ConnectError:
         r = CacheExceptionValues.ConnectError
     except exceptions.FormatError:
@@ -142,7 +141,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.PLAYER_LOOKUP + str(player_id)
-        resp = await wrapper(url, self.cache)
+        resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
         try:
             if resp['error']:
                 if resp['descriptor'] == "Unable to find player with that ID.":  # TruckersMP doesn't raise a 404
@@ -166,7 +165,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.BANS_LOOKUP + str(player_id)
-        resp = await wrapper(url, self.cache)
+        resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
         bans = list()
         try:
             if resp['error']:
@@ -189,7 +188,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.SERVERS
-        resp = await wrapper(url, self.cache)
+        resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
         servers = list()
         try:
             for server in resp['response']:
@@ -209,7 +208,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.INGAME_TIME
-        resp = await wrapper(url, self.cache)
+        resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
         try:
             game_time = resp['game_time']
         except (KeyError, TypeError):
@@ -230,7 +229,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.EVENTS
-        resp = await wrapper(url, self.cache)
+        resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
 
         event_types = (EventsAttributes.featured,
                        EventsAttributes.today,
@@ -260,7 +259,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.EVENT_LOOKUP + str(event_id)
-        resp = await wrapper(url, self.cache)
+        resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
         if resp is None:
             raise exceptions.NotFoundError()
         try:
@@ -279,7 +278,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.VTCS
-        resp = await wrapper(url, self.cache)
+        resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
         vtc_types = (VTCsAttributes.recent,
                      VTCsAttributes.featured,
                      VTCsAttributes.featured_cover
@@ -306,7 +305,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id)
-        resp = await wrapper(url, self.cache)
+        resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
         if resp is None:
             raise exceptions.NotFoundError()
         try:
@@ -331,7 +330,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_NEWS
-        resp = await wrapper(url, self.cache)
+        resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
         posts = list()
         if resp is None:
             raise exceptions.NotFoundError()
@@ -357,7 +356,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_NEWS + str(news_post_id)
-        resp = await wrapper(url, self.cache)
+        resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
         if resp is None:
             raise exceptions.NotFoundError()
         try:
@@ -378,7 +377,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_ROLES
-        resp = await wrapper(url, self.cache)
+        resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
         vtc_roles = list()
         if resp is None:
             raise exceptions.NotFoundError()
@@ -425,7 +424,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_MEMBERS
-        resp = await wrapper(url, self.cache)
+        resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
         vtc_members = list()
         if resp is None:
             raise exceptions.NotFoundError()
@@ -472,7 +471,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_EVENTS
-        resp = await wrapper(url, self.cache)
+        resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
         events = list()
         if resp is None:
             raise exceptions.NotFoundError()
@@ -501,7 +500,7 @@ class TruckersMP:
             will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_EVENTS + str(event_id)
-        resp = await wrapper(url, self.cache)
+        resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
         if resp is None:
             raise exceptions.NotFoundError()
         try:
