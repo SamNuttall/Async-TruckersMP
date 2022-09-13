@@ -239,9 +239,12 @@ class TruckersMP:
         events_dict = {event_types[0]: [], event_types[1]: [], event_types[2]: [], event_types[3]: []}
 
         try:
-            for index, event_type in enumerate(resp['response'].values()):
-                for event in event_type:
-                    events_dict[event_types[index]].append(Event(event))
+            response = resp['response']
+            for event_type in event_types:
+                if event_type not in response:
+                    continue
+                for event in response[event_type]:
+                    events_dict[event_type].append(Event(event))
         except (KeyError, TypeError):
             raise exceptions.FormatError()
         else:
