@@ -136,8 +136,7 @@ class Cache:
                 removed += 1
         return removed
 
-    def _get_execute_process_id(self, func: Callable, *args, **kwargs):
-        process_id = (func.__name__, args, tuple(kwargs.items()))
+    def _add_execute_process_id(self, process_id):
         if process_id not in self.ongoing_executes:
             self.ongoing_executes[process_id] = Event()
             self.ongoing_executes[process_id].set()
@@ -179,9 +178,9 @@ class Cache:
 
     async def execute_async(self, func: Callable, key=None, *args, **kwargs):
         """Async version of execute"""
-        process_id = self._get_execute_process_id(func, *args, **kwargs)
-        await self.ongoing_executes[process_id].wait()
         key = make_hashable(key, *args, **kwargs)
+        process_id = self._add_execute_process_id(key)
+        await self.ongoing_executes[process_id].wait()
         c = self.get(key)
         if c is not None:
             return c
