@@ -31,14 +31,14 @@ async def execute(func: Callable, not_found: Callable = None, error: Callable = 
         return r
 
 
-async def wrapper(url, cache, timeout, limiter, logger):
+async def wrapper(url, cache, timeout, limiter, logger, *args, **kwargs):
     class CacheExceptionValues:
         ConnectError = "cache-instruction: to raise - ConnectError"
         FormatError = "cache-instruction: to raise - FormatError"
         NotFoundError = "cache-instruction: to raise - NotFoundError"
 
     try:
-        r = await cache.execute_async(get_request, None, url, logger, timeout=timeout, limiter=limiter)
+        r = await cache.execute_async(get_request, None, url, logger, timeout=timeout, limiter=limiter, *args, **kwargs)
     except exceptions.ConnectError:
         r = CacheExceptionValues.ConnectError
     except exceptions.FormatError:
