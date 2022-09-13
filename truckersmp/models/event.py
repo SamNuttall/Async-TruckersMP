@@ -71,11 +71,12 @@ class EventAttributes:
 
 class Events:
     """
-    A class object representing featured, todays and upcoming events.
+    A class object representing featured, todays, upcoming and now events.
 
     :ivar Optional[List[Event]] featured:
     :ivar Optional[List[Event]] today:
     :ivar Optional[List[Event]] upcoming:
+    :ivar Optional[List[Event]] now:
     """
     def __init__(self, events):
         a = EventsAttributes
@@ -84,6 +85,7 @@ class Events:
         self.featured = e[a.featured]
         self.today = e[a.today]
         self.upcoming = e[a.upcoming]
+        self.now = e[a.now]
 
 
 class Event:
