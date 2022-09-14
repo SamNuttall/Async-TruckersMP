@@ -29,7 +29,7 @@ async def execute(func: Callable, *args, **kwargs):
         return r
 
 
-async def wrapper(url, cache, timeout, limiter, logger, *args, **kwargs):
+async def wrapper(url, cache, timeout, limiter, logger, key=None, *args, **kwargs):
     """A wrapper to handle exceptions with cache. This will keep the rate-limit in check."""
     class CacheExceptionValues:
         ConnectError = "cache-instruction: to raise - ConnectError"
@@ -37,7 +37,7 @@ async def wrapper(url, cache, timeout, limiter, logger, *args, **kwargs):
         NotFoundError = "cache-instruction: to raise - NotFoundError"
 
     try:
-        r = await cache.execute_async(get_request, None, url, logger, timeout=timeout, limiter=limiter, *args, **kwargs)
+        r = await cache.execute_async(get_request, key, url, logger, timeout=timeout, limiter=limiter, *args, **kwargs)
     except exceptions.ConnectError:
         r = CacheExceptionValues.ConnectError
     except exceptions.FormatError:
@@ -518,7 +518,7 @@ class TruckersMP:
         :return: :class:`Version <models.version.Version>`
         :rtype: Union[:class:`Version <models.version.Version>`, bool, None]
         """
-        resp = await wrapper(Endpoints.VERSION)
+        resp = await wrapper(Endpoints.VERSION, self.cache, self.timeout, self.limiter, self.logger)
         try:
             version = Version(resp)
         except (KeyError, TypeError):
@@ -532,7 +532,7 @@ class TruckersMP:
         :return: :class:`Rules <models.rules.Rules>`
         :rtype: Union[:class:`Rules <models.rules.Rules>`, bool, None]
         """
-        resp = await wrapper(Endpoints.RULES)
+        resp = await wrapper(Endpoints.RULES, self.cache, self.timeout, self.limiter, self.logger)
         try:
             rules = Rules(resp)
         except (KeyError, TypeError):
