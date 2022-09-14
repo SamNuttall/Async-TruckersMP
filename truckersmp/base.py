@@ -17,21 +17,20 @@ from .models.rules import Rules
 from . import exceptions
 
 
-async def execute(func: Callable, not_found: Callable = None, error: Callable = None, *args, **kwargs):
-    """"""
+async def execute(func: Callable, *args, **kwargs):
+    """Execute a function and simplify any errors into ExecuteError and NotFoundError"""
     try:
         r = await func(*args, **kwargs)
     except exceptions.NotFoundError:
-        await not_found()
-        raise exceptions.ExecuteError()
+        raise exceptions.NotFoundError()
     except (exceptions.ConnectError, exceptions.FormatError, exceptions.RateLimitError):
-        await error()
         raise exceptions.ExecuteError()
     else:
         return r
 
 
 async def wrapper(url, cache, timeout, limiter, logger, *args, **kwargs):
+    """A wrapper to handle exceptions with cache. This will keep the rate-limit in check."""
     class CacheExceptionValues:
         ConnectError = "cache-instruction: to raise - ConnectError"
         FormatError = "cache-instruction: to raise - FormatError"
