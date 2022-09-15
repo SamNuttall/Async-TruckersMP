@@ -28,26 +28,26 @@ class Server:
     """
     A class object representing a TruckersMP server
 
-    :ivar Optional[int] id:
-    :ivar Optional[str] game:
-    :ivar Optional[str] ip:
-    :ivar Optional[int] port:
-    :ivar Optional[str] name:
-    :ivar Optional[strr] short_name:
+    :ivar Optional[int] id: The ID of the server
+    :ivar Optional[str] game: The game of the server
+    :ivar Optional[str] ip: The IP address of the server
+    :ivar Optional[int] port: The port of the server
+    :ivar Optional[str] name: The server name
+    :ivar Optional[strr] short_name: The server's shortname
     :ivar Optional[str] id_prefix: A string that is inserted in front of an in-game user's ID.
-    :ivar Optional[bool] online:
-    :ivar Optional[int] players:
-    :ivar Optional[int] queue:
-    :ivar Optional[int] max_players:
-    :ivar Optional[int] map_id:
-    :ivar Optional[int] display_order:
-    :ivar Optional[int] speed_limiter:
-    :ivar Optional[str] collisions:
-    :ivar Optional[str] cars_for_players:
-    :ivar Optional[str] afk_enabled:
-    :ivar Optional[str] event:
-    :ivar Optional[str] special_event:
-    :ivar Optional[str] promods:
+    :ivar Optional[bool] online: Whether the server is online
+    :ivar Optional[int] players: The number of players in the server
+    :ivar Optional[int] queue: The number of players in the server's queue
+    :ivar Optional[int] max_players: The maximum number of players allowed in the server
+    :ivar Optional[int] map_id: The map ID of the server
+    :ivar Optional[int] display_order: Where the server is displayed in the list
+    :ivar Optional[int] speed_limiter: Whether the speed limiter is enabled
+    :ivar Optional[str] collisions: Whether collisions are enabled
+    :ivar Optional[str] cars_for_players: Whether players are allowed to drive cars
+    :ivar Optional[str] afk_enabled: Whether AFK kick is enabled
+    :ivar Optional[str] event: Whether this is an event server
+    :ivar Optional[str] special_event: Whether this is a special event server
+    :ivar Optional[str] promods: Whether Promods is enabled on this server
     :ivar Optional[int] sync_delay:
     """
     def __init__(self, server):

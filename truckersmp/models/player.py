@@ -47,26 +47,26 @@ class Player:
     """
     A class object representing a TruckersMP player (user)
 
-    :ivar Optional[int ] id:
-    :ivar Optional[str] name:
-    :ivar Optional[str] avatar:
-    :ivar Optional[str] small_avatar:
-    :ivar Optional[str] join_date:
-    :ivar Optional[int] steam_id_64:
-    :ivar Optional[str] steam_id:
-    :ivar Optional[str] discord_id:
-    :ivar Optional[bool] display_vtc_history:
-    :ivar Optional[str] group_name:
-    :ivar Optional[str] group_color:
-    :ivar Optional[str] group_colour:
-    :ivar Optional[int] group_id:
-    :ivar Optional[bool] banned:
-    :ivar Optional[str] banned_until:
-    :ivar Optional[int] ban_count:
-    :ivar Optional[bool] display_bans:
-    :ivar Patreon patreon:
-    :ivar Permissions permissions:
-    :ivar VTC vtc:
+    :ivar Optional[int] id: The ID of the player
+    :ivar Optional[str] name: The name of the player
+    :ivar Optional[str] avatar: An image URL of the player's avatar
+    :ivar Optional[str] small_avatar: An image URL of a small version of the player's avatar
+    :ivar Optional[str] join_date: When the player's account was created
+    :ivar Optional[int] steam_id_64: The user's Steam account SteamID64
+    :ivar Optional[str] steam_id: The user's Steam account ID
+    :ivar Optional[str] discord_id: The user's Discord account ID
+    :ivar Optional[bool] display_vtc_history: Whether the user is displaying their VTC history
+    :ivar Optional[str] group_name: The user's group name
+    :ivar Optional[str] group_color: The user's group colour
+    :ivar Optional[str] group_colour: The user's group colour (same as group_color)
+    :ivar Optional[int] group_id: The user's group ID
+    :ivar Optional[bool] banned: Whether the user is banned
+    :ivar Optional[str] banned_until: When the user's ban expires
+    :ivar Optional[int] ban_count: How many times the user has been banned
+    :ivar Optional[bool] display_bans: Whether the user chooses to show their bans
+    :ivar Patreon patreon: Information about the player's Patreon contributions
+    :ivar Permissions permissions: Information about the player's permissions
+    :ivar VTC vtc: Information about the player's VTC
     """
 
     class Patreon:
@@ -100,9 +100,9 @@ class Player:
         """
         A class object representing the permissions of a player
 
-        :ivar Optional[bool] is_staff:
-        :ivar Optional[bool] is_upper_staff:
-        :ivar Optional[bool] is_game_admin:
+        :ivar Optional[bool] is_staff: Whether the user is a staff member
+        :ivar Optional[bool] is_upper_staff: Whether the user is an upper staff member
+        :ivar Optional[bool] is_game_admin: Whether the user is an in-game admin
         :ivar Optional[bool] show_detailed_on_maps:
         """
         def __init__(self, player, attributes):
@@ -119,10 +119,10 @@ class Player:
         """
         A class object representing the VTC of a player
 
-        :ivar Optional[int] id:
-        :ivar Optional[str] name:
-        :ivar Optional[str] tag:
-        :ivar Optional[bool] in_vtc:
+        :ivar Optional[int] id: The player's VTC ID
+        :ivar Optional[str] name: The player's VTC name
+        :ivar Optional[str] tag: The player's VTC tag
+        :ivar Optional[bool] in_vtc: Whether the player is in a VTC
         :ivar Optional[int] member_id:
         """
         def __init__(self, player, attributes):

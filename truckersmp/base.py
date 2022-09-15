@@ -126,8 +126,6 @@ class TruckersMP:
         :type player_id: int
         :return: :class:`Player <models.player.Player>`
         :rtype: Union[:class:`Player <models.player.Player>`, bool, None]
-        :raises: Refer to :mod:`_process_request() <truckersmp.base.TruckersMP._process_request>` as these errors
-            will be passed through
         """
         url = Endpoints.PLAYER_LOOKUP + str(player_id)
         resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
@@ -150,8 +148,6 @@ class TruckersMP:
         :type player_id: int
         :return: List of :class:`Ban <models.ban.Ban>`
         :rtype: Union[:class:`Ban <models.ban.Ban>`], bool, None]
-        :raises: Refer to :mod:`_process_request() <truckersmp.base.TruckersMP._process_request>` as these errors
-            will be passed through
         """
         url = Endpoints.BANS_LOOKUP + str(player_id)
         resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
@@ -173,8 +169,6 @@ class TruckersMP:
 
         :return: list of :class:`Server <models.server.Server>`
         :rtype: Union[List[:class:`Server <models.server.Server>`], bool, None]
-        :raises: Refer to :mod:`_process_request() <truckersmp.base.TruckersMP._process_request>` as these errors
-            will be passed through
         """
         url = Endpoints.SERVERS
         resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
@@ -193,8 +187,6 @@ class TruckersMP:
 
         :return: Ingame-time
         :rtype: Union[int, bool, None]
-        :raises: Refer to :mod:`_process_request() <truckersmp.base.TruckersMP._process_request>` as these errors
-            will be passed through
         """
         url = Endpoints.INGAME_TIME
         resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
@@ -214,8 +206,6 @@ class TruckersMP:
 
         :return: :class:`Events <models.event.Events>`
         :rtype: Union[:class:`Events <models.event.Events>`, bool, None]
-        :raises: Refer to :mod:`_process_request() <truckersmp.base.TruckersMP._process_request>` as these errors
-            will be passed through
         """
         url = Endpoints.EVENTS
         resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
@@ -247,8 +237,6 @@ class TruckersMP:
         :type event_id: int
         :return: :class:`Event <models.event.Event>`
         :rtype: Union[:class:`Event <models.event.Event>`, bool, None]
-        :raises: Refer to :mod:`_process_request() <truckersmp.base.TruckersMP._process_request>` as these errors
-            will be passed through
         """
         url = Endpoints.EVENT_LOOKUP + str(event_id)
         resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
@@ -266,8 +254,6 @@ class TruckersMP:
 
         :return: :class:`VTCs <models.vtc.VTCs>`
         :rtype: Union[:class:`VTCs <models.vtc.VTCs>`, bool, None]
-        :raises: Refer to :mod:`_process_request() <truckersmp.base.TruckersMP._process_request>` as these errors
-            will be passed through
         """
         url = Endpoints.VTCS
         resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
@@ -293,8 +279,6 @@ class TruckersMP:
         :type vtc_id: int
         :return: :class:`VTC <models.vtc.VTC>`
         :rtype: Union[:class:`VTC <models.vtc.VTC>`, bool, None]
-        :raises: Refer to :mod:`_process_request() <truckersmp.base.TruckersMP._process_request>` as these errors
-            will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id)
         resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
@@ -318,8 +302,6 @@ class TruckersMP:
         :type vtc_id: int
         :return: List of :class:`NewsPost <models.vtc.NewsPost>`
         :rtype: Union[List[:class:`NewsPost <models.vtc.NewsPost>`], bool, None]
-        :raises: Refer to :mod:`_process_request() <truckersmp.base.TruckersMP._process_request>` as these errors
-            will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_NEWS
         resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
@@ -344,8 +326,6 @@ class TruckersMP:
         :type news_post_id: int
         :return: :class:`NewsPost <models.vtc.NewsPost>`
         :rtype: Union[:class:`NewsPost <models.vtc.NewsPost>`, bool, None]
-        :raises: Refer to :mod:`_process_request() <truckersmp.base.TruckersMP._process_request>` as these errors
-            will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_NEWS + str(news_post_id)
         resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
@@ -365,8 +345,6 @@ class TruckersMP:
         :type vtc_id: int
         :return: List of :class:`Role <models.vtc.Role>`
         :rtype: Union[List[:class:`Role <models.vtc.Role>`], bool, None]
-        :raises: Refer to :mod:`_process_request() <truckersmp.base.TruckersMP._process_request>` as these errors
-            will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_ROLES
         resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
@@ -395,8 +373,6 @@ class TruckersMP:
         :type role_id: int
         :return: :class:`Role <models.vtc.Role>`
         :rtype: Union[:class:`Role <models.vtc.Role>`, bool, None]
-        :raises: Refer to :mod:`_process_request() <truckersmp.base.TruckersMP._process_request>` as these errors
-            will be passed through
         """
         vtc_roles = await self.get_vtc_roles(vtc_id)
         for vtc_role in vtc_roles:
@@ -412,8 +388,6 @@ class TruckersMP:
         :type vtc_id: int
         :return: List of :class:`Member <models.vtc.Member>`
         :rtype: Union[List[:class:`Member <models.vtc.Member>`], bool, None]
-        :raises: Refer to :mod:`_process_request() <truckersmp.base.TruckersMP._process_request>` as these errors
-            will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_MEMBERS
         resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
@@ -442,8 +416,6 @@ class TruckersMP:
         :type member_id: int
         :return: :class:`Member <models.vtc.Member>`
         :rtype: Union[:class:`Member <models.vtc.Member>`, bool, None]
-        :raises: Refer to :mod:`_process_request() <truckersmp.base.TruckersMP._process_request>` as these errors
-            will be passed through
         """
         vtc_members = await self.get_vtc_members(vtc_id)
         for vtc_member in vtc_members:
@@ -459,8 +431,6 @@ class TruckersMP:
         :type vtc_id: int
         :return: List of :class:`Event <models.event.Event>`
         :rtype: Union[List[:class:`Event <models.event.Event>`], bool, None]
-        :raises: Refer to :mod:`_process_request() <truckersmp.base.TruckersMP._process_request>` as these errors
-            will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_EVENTS
         resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
@@ -488,8 +458,6 @@ class TruckersMP:
         :type event_id: int
         :return: :class:`Event <models.event.Event>`
         :rtype: Union[:class:`Event <models.event.Event>`, bool, None]
-        :raises: Refer to :mod:`_process_request() <truckersmp.base.TruckersMP._process_request>` as these errors
-            will be passed through
         """
         url = Endpoints.VTC_LOOKUP + str(vtc_id) + Endpoints.VTC_EVENTS + str(event_id)
         resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)

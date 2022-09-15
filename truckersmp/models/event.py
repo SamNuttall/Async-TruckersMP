@@ -73,10 +73,10 @@ class Events:
     """
     A class object representing featured, todays, upcoming and now events.
 
-    :ivar Optional[List[Event]] featured:
-    :ivar Optional[List[Event]] today:
-    :ivar Optional[List[Event]] upcoming:
-    :ivar Optional[List[Event]] now:
+    :ivar Optional[List[Event]] featured: Events featured by TruckersMP
+    :ivar Optional[List[Event]] today: Events that are starting today
+    :ivar Optional[List[Event]] upcoming: Events that are starting soonest, but not today
+    :ivar Optional[List[Event]] now: Events that are happening right now
     """
     def __init__(self, events):
         a = EventsAttributes
@@ -92,30 +92,30 @@ class Event:
     """
     A class representing an event on TruckersMP
 
-    :ivar Optional[int] id:
-    :ivar Optional[str] name:
-    :ivar Optional[str] slug:
-    :ivar Optional[str] game:
-    :ivar Optional[str] language:
-    :ivar Optional[str] start_at:
-    :ivar Optional[str] banner:
-    :ivar Optional[str] map:
-    :ivar Optional[str] description:
-    :ivar Optional[str] rule:
-    :ivar Optional[str] voice_link:
-    :ivar Optional[str] external_link:
-    :ivar Optional[str] featured:
-    :ivar Optional[str] dlcs:
-    :ivar Optional[list] url:
-    :ivar Optional[str] created_at:
-    :ivar Optional[str] updated_at:
-    :ivar EventType event_type:
-    :ivar Server server:
-    :ivar Departure departure:
-    :ivar Arrive arrive:
-    :ivar VTC vtc:
-    :ivar User user:
-    :ivar Attendances attendances:
+    :ivar Optional[int] id: The event ID
+    :ivar Optional[str] name: The name of the event
+    :ivar Optional[str] slug: The event slug (present in the URL)
+    :ivar Optional[str] game: The game which the event takes place on
+    :ivar Optional[str] language: The primary language for the event
+    :ivar Optional[str] start_at: The starting time of the event
+    :ivar Optional[str] banner: An image URL of the event banner
+    :ivar Optional[str] map: An image URL of the event map
+    :ivar Optional[str] description: The event description
+    :ivar Optional[str] rule: The event rules
+    :ivar Optional[str] voice_link: A link to the event's communication platform (eg. Discord server)
+    :ivar Optional[str] external_link: A link to the event's website (or listing)
+    :ivar Optional[str] featured: If featured, equals "Featured"
+    :ivar Optional[list] dlcs: List of DLCs required
+    :ivar Optional[list] url: Link to the event on TruckersMP (only path)
+    :ivar Optional[str] created_at: When the event was created
+    :ivar Optional[str] updated_at: When the event was last updated
+    :ivar EventType event_type: The type of event
+    :ivar Server server: The server the event will take place on
+    :ivar Departure departure: The departure location
+    :ivar Arrive arrive: The desination location
+    :ivar VTC vtc: The VTC the event is organised by
+    :ivar User user: The user the event is organised by
+    :ivar Attendances attendances: The users that plan to attend
     """
 
     class EventType:
@@ -123,7 +123,7 @@ class Event:
         A class object representing a type of event
 
         :ivar Optional[str] key:
-        :ivar Optional[str] name:
+        :ivar Optional[str] name: The name of the event type
         """
         def __init__(self, event, attributes):
             e = event
@@ -137,8 +137,8 @@ class Event:
         """
         A class object representing an event's server
 
-        :ivar Optional[int] id:
-        :ivar Optional[str] name:
+        :ivar Optional[int] id: The ID of the event's server
+        :ivar Optional[str] name: The name of the event's server
         """
         def __init__(self, event, attributes):
             e = event
@@ -152,8 +152,8 @@ class Event:
         """
         A class object representing an event's depature location
 
-        :ivar Optional[str] location:
-        :ivar Optional[str] city:
+        :ivar Optional[str] location: The location in the departure city (eg. garage)
+        :ivar Optional[str] city: The depature city name
         """
         def __init__(self, event, attributes):
             e = event
@@ -167,8 +167,8 @@ class Event:
         """
         A class object representing an event's destination
 
-        :ivar Optional[str] location:
-        :ivar Optional[str] city:
+        :ivar Optional[str] location: The location in the arrival city (eg. garage)
+        :ivar Optional[str] city: The arrival city name
         """
         def __init__(self, event, attributes):
             e = event
@@ -182,8 +182,8 @@ class Event:
         """
         A class object representing an event's VTC
 
-        :ivar Optional[int] id:
-        :ivar Optional[str] name:
+        :ivar Optional[int] id: The ID of the host VTC
+        :ivar Optional[str] name: The name of the host VTC
         """
         def __init__(self, event, attributes):
             e = event
@@ -197,8 +197,8 @@ class Event:
         """
         A class object representing the user (owner) of an event
 
-        :ivar Optional[int] id:
-        :ivar Optional[str] name:
+        :ivar Optional[int] id: The ID of the host user
+        :ivar Optional[str] name: The name of the host user
         """
         def __init__(self, event, attributes):
             e = event
@@ -212,19 +212,21 @@ class Event:
         """
         A class object representing attendance information of an event
 
-        :ivar Optional[int] confirmed:
-        :ivar Optional[List[Attendee]] unsure:
+        :ivar Optional[int] confirmed: The number of users that have confirmed their attendance
+        :ivar Optional[int] unsure: The number of users that are unsure if they can make it
+        :ivar Optional[List[Attendee]] confirmed_users: List of confirmed users
+        :ivar Optional[List[Attendee]] unsure__users: List of unsure users
         """
 
         class Attendee:
             """
             A class object representing an attendee (user) of an event
 
-            :ivar Optional[int] id:
-            :ivar Optional[str] username:
+            :ivar Optional[int] id: The ID of the user
+            :ivar Optional[str] username: The name of the user
             :ivar Optional[bool] following:
-            :ivar Optional[str] created_at:
-            :ivar Optional[str] updated_at:
+            :ivar Optional[str] created_at: When the user confirmed their attendance
+            :ivar Optional[str] updated_at: When the user updated their attendance
             """
             def __init__(self, attendee, attributes):
                 a = attendee

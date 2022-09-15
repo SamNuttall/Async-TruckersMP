@@ -260,8 +260,9 @@ ExecuteError
 
 Advanced
 --------------
-
 .. note::
    This part of documentation is incomplete
 
+execute()
+^^^^^^^^^^^^^^
 .. autofunction:: truckersmp.base.TruckersMP.execute
