@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="async-truckersmp",
-    version="0.2",
+    version="0.2.2",
     description="An asynchronous Python API wrapper for TruckersMP.",
     long_description=open("README.rst", "r", encoding="UTF-8").read(),
     url="https://github.com/SamNuttall/Async-TruckersMP",
