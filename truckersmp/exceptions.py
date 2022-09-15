@@ -42,16 +42,6 @@ class RateLimitError(Error):
         return self.message
 
 
-class ServerError(Error):
-    """Not being used. Any related server error now raises ConnectError for simplicity."""
-    def __init__(self):
-        self.message = "The server returned an error within it's response."
-        super().__init__()
-
-    def __str__(self) -> str:
-        return self.message
-
-
 class FormatError(Error):
     """Raised when the API returns JSON that isn't in the format that's expected (eg. missing a key)"""
     def __init__(self):
@@ -63,7 +53,7 @@ class FormatError(Error):
 
 
 class ExecuteError(Error):
-    """Raised when the execute function raises a different error and executes a different function"""
+    """Raised when the execute() function raises a different error. See execute function docs for more info."""
     def __init__(self):
         self.message = "The execute function ran a function because of a different error"
         super().__init__()

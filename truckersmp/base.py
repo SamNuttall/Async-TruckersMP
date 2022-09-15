@@ -18,7 +18,19 @@ from . import exceptions
 
 
 async def execute(func: Callable, *args, **kwargs):
-    """Execute a function and simplify any errors into ExecuteError and NotFoundError"""
+    """
+    Execute a function and simplify any errors into ExecuteError and NotFoundError
+    ExecuteError will be raised when any of the following are:
+        exceptions.ConnectError
+        exceptions.FormatError
+        exceptions.RateLimitError
+
+    This function is useful in making error handling simplier if you don't need to know the exact failure reason.
+
+    :param func: The function to execute.
+    :type func: typing.Callable
+
+    """
     try:
         r = await func(*args, **kwargs)
     except exceptions.NotFoundError:

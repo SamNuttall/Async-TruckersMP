@@ -4,8 +4,7 @@ Async-TruckersMP
 An asynchronous Python API wrapper for `TruckersMP`_.
 
 .. warning::
-    This library is a work in progress. It has not been thoroughly tested and therefore,
-    may not work as intended.
+    This library is in alpha and bugs may still be present.
 
 Features
 ------------------

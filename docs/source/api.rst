@@ -88,10 +88,6 @@ Get Rules
 ^^^^^^^^^^^^^
 .. autofunction:: truckersmp.base.TruckersMP.get_rules
 
-_process_request function
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: truckersmp.base.TruckersMP._process_request
-
 Models
 --------------
 Below all the models can be found. These are classes that are often returned when using the base class.
@@ -254,10 +250,18 @@ RateLimitError
 ^^^^^^^^^^^^^^
 .. autoexception:: truckersmp.exceptions.RateLimitError
 
-ServerError
-^^^^^^^^^^^^^^
-.. autoexception:: truckersmp.exceptions.ServerError
-
 FormatError
 ^^^^^^^^^^^^^^
 .. autoexception:: truckersmp.exceptions.FormatError
+
+ExecuteError
+^^^^^^^^^^^^^^
+.. autoexception:: truckersmp.exceptions.ExecuteError
+
+Advanced
+--------------
+
+.. note::
+   This part of documentation is incomplete
+
+.. autofunction:: truckersmp.base.TruckersMP.execute
