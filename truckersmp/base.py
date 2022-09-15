@@ -106,28 +106,6 @@ class TruckersMP:
             'min_queue_for_log': min_queue_for_log
         }
 
-    async def make_request(self, url) -> Optional[dict]:  # Old
-        """
-        Make a get request that adheres to the class's configuration (such as rate limit, logging).
-
-        :return: The JSON response given by the API as a Python dictionary
-        :rtype: Optional[dict]
-        """
-        if not self.limiter.has_capacity():
-            sec_since_last_log = (datetime.utcnow() - self.rate_limit['last_log']).total_seconds()
-            if sec_since_last_log > self.log_freq.total_seconds():
-                if self.rate_limit['min_queue_for_log'] <= self.rate_limit['queue']:
-                    queue_len = self.rate_limit['queue'] + 1
-                    self.logger.warning("A user-defined rate limit has been reached! "
-                                        f"{queue_len} request(s) in queue")
-                    self.rate_limit['last_log'] = datetime.utcnow()
-        self.rate_limit['queue'] += 1
-        async with self.limiter:
-            try:
-                return await get_request(url, timeout=self.timeout)
-            finally:
-                self.rate_limit['queue'] -= 1
-
     async def get_player(self, player_id: int) -> Union[Player, bool, None]:
         """
         Get a specific TruckersMP player from the API using their player id
