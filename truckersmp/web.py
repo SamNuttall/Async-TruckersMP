@@ -32,11 +32,13 @@ async def get_request(
 
     """
 
+    # TEMP FIX - further research required
     user_agent = "Mozilla/5.0"
-    if headers is None:
-        headers = {'User-Agent': user_agent}  # Some APIs want a user-agent, otherwise will return 403
-    else:
-        headers['User-Agent'] = user_agent
+    if 'truckyapp' in url:
+        if headers is None:
+            headers = {'User-Agent': user_agent}  # Some APIs want a user-agent, otherwise will return 403
+        else:
+            headers['User-Agent'] = user_agent
 
     if limiter:
         await limiter.acquire()
