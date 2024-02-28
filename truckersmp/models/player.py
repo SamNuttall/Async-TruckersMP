@@ -11,7 +11,7 @@ class PlayerAttributes:
 
     class Permissions:
         is_staff = "isStaff"
-        is_upper_staff = "isUpperStaff"
+        is_upper_staff = "isManagement" # changed from isUpperStaff
         is_game_admin = "isGameAdmin"
         show_detailed_on_web_maps = "showDetailedOnWebMaps"
 
