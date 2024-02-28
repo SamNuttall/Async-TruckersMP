@@ -130,9 +130,9 @@ class TruckersMP:
         url = Endpoints.PLAYER_LOOKUP + str(player_id)
         resp = await wrapper(url, self.cache, self.timeout, self.limiter, self.logger)
         try:
+            if resp is None: # /player endpoint now returns 404
+                raise exceptions.NotFoundError()
             if resp['error']:
-                if resp['descriptor'] == "Unable to find player with that ID.":  # TruckersMP doesn't raise a 404
-                    raise exceptions.NotFoundError()
                 raise exceptions.ConnectError()
             player = Player(resp['response'])
         except (KeyError, TypeError):
